@@ -1,9 +1,27 @@
 // Array of artists that are used to create buttons
-var artists = ['John Coltrane', 'John Mayer', 'Bill Evans', 'Duke Ellington', 'Tupac'];
+var artists = ['John Coltrane', 'John Legend', 'John Mayer', 'Duke Ellington', 'Tupac'];
 
-$(document).ready(generateButtons());
+// API Request Parameters
+var apiKey = 'CADm0V2ObtC7MT6i0hWmGFhcSemeIsIs';
+var userInput;
 
-// FUNCTION generates buttons with artist names and includes on click event for those buttons
+// FUNCTION that converts any string to title case => "This Is Title Case"
+function toTitleCase(word)
+{
+    var wordArray = word.toLowerCase().split(' '); // returns an array object
+
+    for (let i=0; i < wordArray.length; i++)
+    {
+        wordArray[i] = wordArray[i].charAt(0).toUpperCase() + wordArray[i].slice(1);
+    }
+    return wordArray.join(' ');
+}
+
+
+$(document).ready(generateButtons()); // WHEN THE DOCUMENT FINISHED LOADING, GENERATE BUTTONS FOR WORD IN ARTIST ARRAY
+
+
+// FUNCTION that generates buttons with artist names and includes an on click event for those buttons
 function generateButtons()
 {
  for (let i = 0; i < artists.length; i++)
@@ -18,22 +36,18 @@ function generateButtons()
     });
 }
 
-// API Request Parameters
-var apiKey = 'CADm0V2ObtC7MT6i0hWmGFhcSemeIsIs';
-var userInput;
 
 // On click event for SUBMIT button
 $('#btn-submit').on('click', function()
 {
-    userInput = $('#search').val();
+    userInput = toTitleCase($('#search').val());
 
-    if (userInput.length === 0)
+    if (userInput.length === 0) //  CHECK TO SEE IF THE USER HITS SUBMIT WITHOUT TYPING A WORD INTO THE INPUT BOX
     {
         $('#warning').html('<h3>Please enter a word before submitting</h3>').css({'font-size': '14px', 'color': '#ff0000 '});
     }
     else
     {
-
         if (!artists.includes(userInput))  // CHECK TO SEE IF userInput IS NOT IN THE ARRAY
         {
            artists.push(userInput); // APPEND THE USERS INPUT TO THE ARTISTS ARRAY
@@ -41,7 +55,7 @@ $('#btn-submit').on('click', function()
 
         $('.buttons').empty(); // REMOVE BUTTONS FROM ARTIST BUTTONS DIV
 
-        $('#search').val(''); // CLEAR INPUT BOX TEXT FOR NEW SEARCH
+        $('#search').val('').focus(); // CLEAR INPUT BOX TEXT FOR NEW SEARCH AND LEAVE THE USER IN THE INPUT BOX
 
         generateButtons(); // GENERATE THE BUTTONS WITH THE ARTISTS NAMES
 
@@ -51,6 +65,8 @@ $('#btn-submit').on('click', function()
     }
 });
 
+// FUNCTION that sends the ajax request to the API, it then creates the html to show the returned images and ratings
+// An on click event is created for all images
 function ajaxRequest(artistName)
 {
     // GIF API URL
@@ -63,11 +79,12 @@ function ajaxRequest(artistName)
             $('#gif-images').empty();
             for (let i = 0; i < response.data.length; i++)
             {
-                let gifImage = response.data[i].images.fixed_width_still.url;
+                let gifStill = response.data[i].images.fixed_width_still.url;
                 let gif = response.data[i].images.fixed_width.url;
-                let imageRating = response.data[i].rating;
-                $('#gif-images').prepend('<span>Rating: ' + imageRating + '<img src="' + gifImage
-                            + '" data-still="' + gifImage
+                let imageRating = response.data[i].rating.toUpperCase();
+
+                $('#gif-images').prepend('<span>Rating: ' + imageRating + '<img src="' + gifStill
+                            + '" data-still="' + gifStill
                             + '" data-moving="' + gif
                             + '" data-state="still"'
                             + '"></span>');
