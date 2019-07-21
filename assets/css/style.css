@@ -38,17 +38,23 @@ body {
 }
 
 #gif-images {
-    width: 60%;
+    width: 40%;
+
 }
 
 #gif-images img {
     margin: 30px;
 }
 
+#gif-images span {
+    margin: auto;
+    display: inline-flex;
+}
+
 #user-box{
     width: 40%;
-    position: fixed;
-    left: 450px;
+    position: absolute;
+    left: 800px;
     top: 100px;
 }
 
@@ -84,5 +90,27 @@ body {
 #user-box button:hover {
     cursor: pointer;
     border: solid 1px #E59500;
+}
+
+@media only screen and (max-width: 768px)
+{
+    #user-box {
+        left: 400px;
+    }
+    #gif-images span {
+        margin: auto;
+    }
+}
+@media only screen and (max-width: 414px)
+{
+    #user-box {
+        left: 200px;
+    }
+    #user-box input{
+        width: 80%;
+    }
+    #gif-images span {
+        margin: auto;
+    }
 }
 

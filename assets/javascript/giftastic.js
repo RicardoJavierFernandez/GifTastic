@@ -29,9 +29,7 @@ $('#btn-submit').on('click', function()
 
     if (userInput.length === 0)
     {
-        $('#warning')
-            .html('<h3>Please enter a word before submitting</h3>')
-            .css({'font-size': '14px', 'color': '#ff0000 '});
+        $('#warning').html('<h3>Please enter a word before submitting</h3>').css({'font-size': '14px', 'color': '#ff0000 '});
     }
     else
     {
@@ -68,13 +66,11 @@ function ajaxRequest(artistName)
                 let gifImage = response.data[i].images.fixed_width_still.url;
                 let gif = response.data[i].images.fixed_width.url;
                 let imageRating = response.data[i].rating;
-                $('#gif-images')
-                    .prepend('<img src="' + gifImage
+                $('#gif-images').prepend('<span>Rating: ' + imageRating + '<img src="' + gifImage
                             + '" data-still="' + gifImage
                             + '" data-moving="' + gif
                             + '" data-state="still"'
-                            + '">')
-                    .prepend('<p> Rating: ' + imageRating + '</p>');
+                            + '"></span>');
             }
 
             $('#gif-images img').on('click', function()
@@ -91,9 +87,3 @@ function ajaxRequest(artistName)
             });
         })
 }
-
-
-
-
-
-
