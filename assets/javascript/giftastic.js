@@ -3,15 +3,20 @@ var artists = ['John Coltrane', 'John Mayer', 'Bill Evans', 'Duke Ellington', 'T
 
 $(document).ready(generateButtons());
 
-// FUNCTION generates buttons with artist names
+// FUNCTION generates buttons with artist names and includes on click event for those buttons
 function generateButtons()
 {
  for (let i = 0; i < artists.length; i++)
     {
         $('.buttons').append(`<button> ${artists[i]}</button>`);
     }
-}
 
+ $('.buttons button').on('click', function()
+    {
+        let artistName = $(this)[0].innerText.trim();
+        ajaxRequest(artistName);
+    });
+}
 
 // API Request Parameters
 var apiKey = 'CADm0V2ObtC7MT6i0hWmGFhcSemeIsIs';
@@ -30,64 +35,60 @@ $('#btn-submit').on('click', function()
     }
     else
     {
-        // Append the user's input to the artists array
-        if (!artists.includes(userInput))
+
+        if (!artists.includes(userInput))  // CHECK TO SEE IF userInput IS NOT IN THE ARRAY
         {
-           artists.push(userInput);
+           artists.push(userInput); // APPEND THE USERS INPUT TO THE ARTISTS ARRAY
         }
-        // REMOVE BUTTONS FROM ARTIST BUTTONS
-        $('.buttons').empty();
 
-        // CLEAR INPUT BOX TEXT FOR NEW SEARCH
-        $('#search').val('');
+        $('.buttons').empty(); // REMOVE BUTTONS FROM ARTIST BUTTONS DIV
 
-        // GENERATE THE BUTTONS WITH THE ARTISTS NAMES
-        generateButtons();
+        $('#search').val(''); // CLEAR INPUT BOX TEXT FOR NEW SEARCH
 
-        // CLEAR THE WARNING MESSAGE GENERATED WHEN THE SUBMIT BUTTON IS PRESSED WITH NO TEXT INPUT
-        $('#warning').empty();
+        generateButtons(); // GENERATE THE BUTTONS WITH THE ARTISTS NAMES
 
-        // GIF API URL
-        var queryUrl = `https://api.giphy.com/v1/gifs/search?q=${userInput}&api_key=${apiKey}&limit=10`;
+        $('#warning').empty(); // CLEAR WARNING MESSAGE GENERATED WHEN THE SUBMIT BUTTON IS PRESSED WITH NO TEXT INPUT
 
-        ajaxRequest(queryUrl);
-
-        // $.ajax({
-        //     method: "GET",
-        //     url: queryUrl
-        // }).then(function(response)
-        // {
-        //     $('#gif-images').empty();
-        //     for (let i = 0; i < response.data.length; i++)
-        //     {
-        //         let gifImage = response.data[i].images.fixed_width_still.url;
-        //         // let rating = response.data
-        //
-        //         $('#gif-images').prepend('<img src="' + gifImage  + '">');
-        //         console.log(response.data[i]);
-        //     }
-        //
-        // })
+        ajaxRequest(userInput);
     }
 });
 
-function ajaxRequest(urlParam)
+function ajaxRequest(artistName)
 {
-        $.ajax({
+    // GIF API URL
+    var queryUrl = `https://api.giphy.com/v1/gifs/search?q=${artistName}&api_key=${apiKey}&limit=10`;
+    $.ajax({
             method: "GET",
-            url: urlParam
+            url: queryUrl
         }).then(function(response)
         {
             $('#gif-images').empty();
             for (let i = 0; i < response.data.length; i++)
             {
                 let gifImage = response.data[i].images.fixed_width_still.url;
+                let gif = response.data[i].images.fixed_width.url;
                 let imageRating = response.data[i].rating;
-                $('#gif-images').prepend('<p> Rating: ' + imageRating + '</p>');
-                $('#gif-images').prepend('<img src="' + gifImage  + '">');
-                console.log(response.data[i]);
+                $('#gif-images')
+                    .prepend('<img src="' + gifImage
+                            + '" data-still="' + gifImage
+                            + '" data-moving="' + gif
+                            + '" data-state="still"'
+                            + '">')
+                    .prepend('<p> Rating: ' + imageRating + '</p>');
             }
 
+            $('#gif-images img').on('click', function()
+            {
+                let imageState = $(this).attr('data-state');
+                if (imageState === 'still')
+                {
+                    $(this).attr('src', $(this).attr('data-moving')).attr('data-state', 'moving')
+                }
+                else
+                {
+                    $(this).attr('src', $(this).attr('data-still')).attr('data-state', 'still')
+                }
+            });
         })
 }
 
